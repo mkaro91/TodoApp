@@ -1,12 +1,14 @@
 from datetime import datetime, date
 from .priority import Priority
+from .category import Category
 
 class Todo:
     """ Represents a single task to be done """
-    def __init__(self, id: int, title: str, description: str, priority: Priority, due_date: date | None = None) -> None:
+    def __init__(self, id: int, title: str, description: str, category: Category, priority: Priority, due_date: date | None = None) -> None:
         self.id = id
         self.title = title
         self.description = description
+        self.category = category
         self.priority = priority
         self.due_date = due_date
 
@@ -23,6 +25,7 @@ class Todo:
             id = data['id'],
             title = data['title'],
             description = data['description'],
+            category = Category(data['category']),
             priority = Priority(data['priority']),
             due_date = datetime.strptime(data['due_date'], "%Y-%m-%d") if data['due_date'] is not None else None
         )
@@ -36,6 +39,7 @@ class Todo:
             'title': self.title,
             'description': self.description,
             'priority': self.priority.value,
+            'category': self.category.value,
             'due_date': self.due_date.strftime("%Y-%m-%d") if self.due_date is not None else None,
             'completed': self.completed,
             'created_date': self.created_date.strftime("%Y-%m-%d")

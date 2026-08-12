@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from models.Todo import Todo, Priority
+from models.Todo import Todo, Priority, Category
 from models.TodoList import TodoList
 
 class TodoService:
@@ -15,6 +15,14 @@ class TodoService:
 
         title = input("Todo Title: ").strip().title()
         description = input("Description: ").strip()
+
+        # Category must be one of work, personal, projects, learning, errands, health, finance, home, social, other
+        while True:
+            try:
+                category = Category(input("Category: ").strip().lower())
+                break
+            except ValueError:
+                print("Invalid Category.\n")
 
         # Priority must be one of low, medium, high, or critical
         while True:
