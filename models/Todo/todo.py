@@ -1,8 +1,9 @@
 from datetime import datetime, date
+from .priority import Priority
 
 class Todo:
     """ Represents a single task to be done """
-    def __init__(self, id: int, title: str, description: str, priority: str, due_date: date | None = None) -> None:
+    def __init__(self, id: int, title: str, description: str, priority: Priority, due_date: date | None = None) -> None:
         self.id = id
         self.title = title
         self.description = description
@@ -22,7 +23,7 @@ class Todo:
             id = data['id'],
             title = data['title'],
             description = data['description'],
-            priority = data['priority'],
+            priority = Priority(data['priority']),
             due_date = datetime.strptime(data['due_date'], "%Y-%m-%d") if data['due_date'] is not None else None
         )
         todo.completed = data['completed']
@@ -34,7 +35,7 @@ class Todo:
             'id': self.id,
             'title': self.title,
             'description': self.description,
-            'priority': self.priority,
+            'priority': self.priority.value,
             'due_date': self.due_date.strftime("%Y-%m-%d") if self.due_date is not None else None,
             'completed': self.completed,
             'created_date': self.created_date.strftime("%Y-%m-%d")

@@ -1,12 +1,12 @@
 from datetime import datetime
 
-from models.Todo import Todo
+from models.Todo import Todo, Priority
 from models.TodoList import TodoList
 
 class TodoService:
     def create_todo(self, todo_list: TodoList):
         """
-        Collects user input and creates a Todo object with the values
+        Collects user input and creates a Todo object with the collected values
 
         :param todo_list: List of currently stored Todo objects
         """
@@ -15,7 +15,16 @@ class TodoService:
 
         title = input("Todo Title: ").strip().title()
         description = input("Description: ").strip()
-        priority = input("Priority: ").strip()
+
+        # Priority must be one of low, medium, high, or critical
+        while True:
+            try:
+                priority = Priority(input("Priority: ").strip().lower())
+                break
+            except ValueError:
+                print("Invalid Priority.\n")
+
+        # Due date value may be blank
         due_date = input("Due Date (Optional): ").strip()
 
         # Modify Due Date
