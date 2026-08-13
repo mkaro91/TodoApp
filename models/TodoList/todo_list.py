@@ -1,10 +1,15 @@
+from services.todo_filterer import TodoFilterer
+
 from models.Todo import Todo
+
 from .todo_repository import TodoRepository
+
 
 class TodoList:
     """ Represents a collection of Todos """
     def __init__(self) -> None:
         self.repo = TodoRepository()
+        self.filterer = TodoFilterer()
 
     def _id_in_collection(self, todo_id):
         """
@@ -75,7 +80,7 @@ class TodoList:
 
         :return list[Todo]: List of all completed Todo objects found in collection
         """
-        return [todo for todo in self.repo.get_all().values() if todo.completed]
+        return self.filterer.by_completed(todo_list=self.get_all())
 
     def get_pending(self) -> list[Todo]:
         """
@@ -83,4 +88,4 @@ class TodoList:
 
         :return list[Todo]: List of all incomplete Todo objects found in collection
         """
-        return [todo for todo in self.repo.get_all().values() if not todo.completed]
+        return self.filterer.by_completed(todo_list=self.get_all(), is_completed=False)

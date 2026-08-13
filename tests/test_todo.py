@@ -1,13 +1,13 @@
 from datetime import datetime, timedelta
 
-from models.Todo import Todo
+from models.Todo import Todo, Priority, Category
 
 def create_todo_no_due_date():
     # Due date defaults to None
-    return Todo(id=1, title="Test", description="Testing", priority="Low")
+    return Todo(id=1, title="Test", description="Testing", priority=Priority.LOW, category=Category.OTHER)
 
 def create_todo_with_due_date(due_date: datetime):
-    return Todo(id=1, title="Test", description="Testing", priority="Low", due_date=due_date)
+    return Todo(id=1, title="Test", description="Testing", priority=Priority.LOW, category=Category.OTHER, due_date=due_date)
 
 # ---------------------------------------------------------------------------- #
 # ------------------------------ Initialization ------------------------------ #
@@ -18,7 +18,8 @@ def test_initialize_no_due_date():
     assert todo.id == 1
     assert todo.title == "Test"
     assert todo.description == "Testing"
-    assert todo.priority == "Low"
+    assert todo.priority == Priority.LOW
+    assert todo.category == Category.OTHER
     assert todo.due_date == None
     assert todo.completed == False
     assert todo.created_date < datetime.now()
@@ -29,7 +30,8 @@ def test_initialize_with_due_date():
     assert todo.id == 1
     assert todo.title == "Test"
     assert todo.description == "Testing"
-    assert todo.priority == "Low"
+    assert todo.priority == Priority.LOW
+    assert todo.category == Category.OTHER
     assert todo.due_date is not None
     assert todo.due_date > datetime.now()
     assert todo.completed == False
