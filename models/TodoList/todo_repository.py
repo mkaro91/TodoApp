@@ -10,35 +10,36 @@ SAVE_PATH = DATA_DIR / "collection.json"
 class TodoRepository:
     def __init__(self):
         self.collection: dict[int, Todo] = self._load_todos() # Uses dictionary for faster and less expensive lookups
-        
-    def _load_todos(self):
+    
+    def _collection_to_dict(self) -> dict[int, dict[str, any]]:
         """
-        Load Todo objects from JSON file
+        Returns current collection of Todo objects in serializable format
+
+        :return dict[int, dict[str, any]]: Todo objects in serializable format
         """
-        collection = {}
-
-        try:
-            with open(SAVE_PATH, 'r') as f:
-                data = json.load(f)
-        except (FileNotFoundError, json.JSONDecodeError):
-            return collection
-
-        for k, v in data.items():
-            collection[k] = Todo.from_dict(v)
-
-        return collection
-
-    def save_todos(self):
-        """
-        Save Todo objects to JSON file
-        """
-        data = {
+        return {
             k: v.to_dict()
             for k, v in self.collection.items()
         }
+        
+    def _load_todos(self) -> dict:
+        """
+        Load Todo objects from JSON file
 
+        :return dict: Returns loaded Todo objects or empty dictionary
+        """
+        try:
+            with open(SAVE_PATH, 'r') as f:
+                return {k: Todo.from_dict(v) for k, v in json.load(f).items()}
+        except (FileNotFoundError, json.JSONDecodeError):
+            return {}
+
+    def save_todos(self) -> None:
+        """
+        Save Todo objects to JSON file
+        """
         with open(SAVE_PATH, 'w') as f:
-            json.dump(data, f, indent=4)
+            json.dump(self._collection_to_dict(), f, indent=4)
 
     def get_all(self) -> dict[int, Todo]:
         """

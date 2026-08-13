@@ -10,6 +10,9 @@ class TodoApp:
         self.todo_list = TodoList()
         self.service = TodoService()
 
+    def _invalid_selection(self):
+        print("Invalid selection.")
+
     def _print_result_list(self, results: list[Todo]):
         print("\n=== Results ===")
         if not results:
@@ -28,7 +31,7 @@ class TodoApp:
             print("4. Keyword")
             print("0. Return to Main Menu")
 
-            choice = input("\n> ").strip()
+            choice = self.service.collector.collect_menu_choice()
             match choice:
                 case "0": break
                 case "1":
@@ -37,20 +40,13 @@ class TodoApp:
                     print("2. Incomplete")
                     print("0. Cancel")
 
-                    choice = input("\n> ").strip()
+                    choice = self.service.collector.collect_menu_choice()
                     match choice:
                         case "0": pass
+                        case "1": self._print_result_list(results=self.todo_list.filterer.by_completed(todo_list=self.todo_list.get_all(), is_completed=True))
+                        case "2": self._print_result_list(self.todo_list.filterer.by_completed(todo_list=self.todo_list.get_all(), is_completed=False))
 
-                        case "1": 
-                            results = self.todo_list.filterer.by_completed(todo_list=self.todo_list.get_all(), is_completed=True)
-                            self._print_result_list(results=results)
-
-                        case "2": 
-                            results = self.todo_list.filterer.by_completed(todo_list=self.todo_list.get_all(), is_completed=False)
-                            self._print_result_list(results=results)
-
-                        case _: 
-                            print("Invalid selection.")
+                        case _: self._invalid_selection()
 
                 case "2":
                     print("\nFilter By:")
@@ -60,28 +56,15 @@ class TodoApp:
                     print("4. Critical Priority")
                     print("0. Cancel")
 
-                    choice = input("\n> ").strip()
+                    choice = self.service.collector.collect_menu_choice()
                     match choice:
                         case "0": pass
+                        case "1": self._print_result_list(self.todo_list.filterer.by_priority(todo_list=self.todo_list.get_all(), priority=Priority.LOW))
+                        case "2": self._print_result_list(self.todo_list.filterer.by_priority(todo_list=self.todo_list.get_all(), priority=Priority.MEDIUM))
+                        case "3": self._print_result_list(self.todo_list.filterer.by_priority(todo_list=self.todo_list.get_all(), priority=Priority.HIGH))
+                        case "4": self._print_result_list(self.todo_list.filterer.by_priority(todo_list=self.todo_list.get_all(), priority=Priority.CRITICAL))
 
-                        case "1": 
-                            results = self.todo_list.filterer.by_priority(todo_list=self.todo_list.get_all(), priority=Priority.LOW)
-                            self._print_result_list(results=results)
-
-                        case "2": 
-                            results = self.todo_list.filterer.by_priority(todo_list=self.todo_list.get_all(), priority=Priority.MEDIUM)
-                            self._print_result_list(results=results)
-
-                        case "3": 
-                            results = self.todo_list.filterer.by_priority(todo_list=self.todo_list.get_all(), priority=Priority.HIGH)
-                            self._print_result_list(results=results)
-
-                        case "4": 
-                            results = self.todo_list.filterer.by_priority(todo_list=self.todo_list.get_all(), priority=Priority.CRITICAL)
-                            self._print_result_list(results=results)
-
-                        case _: 
-                            print("Invalid selection")
+                        case _: self._invalid_selection()
 
                 case "3":
                     while True:
@@ -91,16 +74,13 @@ class TodoApp:
                         except ValueError:
                             print('Invalid date format. Must be YYYY-MM-DD')
 
-                    results = self.todo_list.filterer.by_due_date(todo_list=self.todo_list.get_all(), due_date=due_date)
-                    self._print_result_list(results=results)
+                    self._print_result_list(self.todo_list.filterer.by_due_date(todo_list=self.todo_list.get_all(), due_date=due_date))
 
                 case "4":
-                    kw = input("\nEnter Keyword: ").strip()
+                    kw = self.service.collector.collect_keyword()
+                    self._print_result_list(self.todo_list.filterer.by_keyword(todo_list=self.todo_list.get_all(), keyword=kw))
 
-                    results = self.todo_list.filterer.by_keyword(todo_list=self.todo_list.get_all(), keyword=kw)
-                    self._print_result_list(results=results)
-                    
-                case _: print("Invalid choice.")
+                case _: self._invalid_selection()
 
     def run(self):
         """
