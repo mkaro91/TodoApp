@@ -1,6 +1,4 @@
-from datetime import datetime
-
-from models.Todo import Todo, Priority, Category
+from models.Todo import Todo, Priority, Category, Tag
 from models.TodoList import TodoList
 
 from services.collector_service import Collector
@@ -55,7 +53,11 @@ class TodoService:
         # Due date value may be blank
         due_date = self.collector.collect_due_date()
 
-        todo = Todo(id=id, title=title, description=description, priority=priority, category=category, due_date=due_date)
+        # Collect Todo Tags
+        tags = self.collector.collect_list(prompt="\nEnter Tag (Leave blank to exit): ")
+        tags = [Tag(text=text) for text in tags]
+
+        todo = Todo(id=id, title=title, description=description, priority=priority, category=category, due_date=due_date, tags=tags)
         todo_list.add(todo)
         self._save_todos(todo_list=todo_list)
 

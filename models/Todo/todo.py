@@ -1,23 +1,28 @@
 from datetime import datetime, date
 from .priority import Priority
 from .category import Category
+from .tag import Tag
 
 class Todo:
     """ Represents a single task to be done """
-    def __init__(self, id: int, title: str, description: str, category: Category, priority: Priority, due_date: date | None = None) -> None:
+    def __init__(self, id: int, title: str, description: str, category: Category, priority: Priority, due_date: date | None = None, tags: list[str] = []) -> None:
         self.id = id
         self.title = title
         self.description = description
         self.category = category
         self.priority = priority
         self.due_date = due_date
+        self.tags = tags
 
         self.completed: bool = False
         self.created_date: date = datetime.now()
 
     def __str__(self) -> str:
         """ String representation of Todo object """
-        return f"[{self.id}] {self.title} | Priority: {self.priority}"
+        priority = self.priority.value.upper()
+        tags = ', '.join([tag.text for tag in self.tags]) if self.tags else 'None'
+        complete_lbl = 'COMPLETE' if self.completed else 'PENDING'
+        return f"[{self.id}] {self.title} | Priority: {priority} | Tags: {tags} | {complete_lbl}"
 
     @classmethod
     def from_dict(cls, data):
@@ -27,7 +32,8 @@ class Todo:
             description = data['description'],
             category = Category(data['category']),
             priority = Priority(data['priority']),
-            due_date = datetime.strptime(data['due_date'], "%Y-%m-%d") if data['due_date'] is not None else None
+            due_date = datetime.strptime(data['due_date'], "%Y-%m-%d") if data['due_date'] is not None else None,
+            tags = [Tag.from_dict(tag) for tag in data['tags']]
         )
         todo.completed = data['completed']
         todo.created_date = datetime.strptime(data['created_date'], "%Y-%m-%d")
@@ -41,6 +47,7 @@ class Todo:
             'priority': self.priority.value,
             'category': self.category.value,
             'due_date': self.due_date.strftime("%Y-%m-%d") if self.due_date is not None else None,
+            'tags': [tag.to_dict() for tag in self.tags],
             'completed': self.completed,
             'created_date': self.created_date.strftime("%Y-%m-%d")
         }
